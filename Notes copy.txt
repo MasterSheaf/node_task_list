@@ -1,0 +1,15 @@
+C:\Program Files\MongoDB\Server\5.0\data\
+C:\Program Files\MongoDB\Server\5.0\log\
+
+run mongod to get the server running
+run mongosh (or mongo for the old shell) to get a terminal
+
+To make a database
+use <name of the database>
+
+show dbs - shows all of them
+
+db - shows current connection
+
+general heierachry...
+db.collection.document
