@@ -1,3 +1,5 @@
+"use strict";
+
 // express is actually a function, not an object
 const express = require('express');
 
@@ -6,6 +8,7 @@ const express = require('express');
 require('./db/database');
 
 const User = require('./models/user');
+const Task = require('./models/task')
 
 const app = express();
 
@@ -22,6 +25,25 @@ app.get('*', (req, res) => {
 });
 
 // we are going to use POST to create a new note
+app.post('/tasks', (req, res) => {
+
+    console.log("POST: Task", req.body);
+    
+    // we are already getting the right format of object
+    // from the post request so we can just feed into the
+    // the model factory to get a new user
+    const user = new Task(req.body);
+
+    // push this to the database
+    user.save().then( () => {
+        res.status(201).send(req.body);
+    }).catch( (e) => {
+        res.status(400).send(e);
+        console.log("ERROR:", e);
+    });
+})
+
+// we are going to use POST to create a new note
 app.post('/users', (req, res) => {
 
     console.log("POST: User", req.body);
@@ -33,13 +55,11 @@ app.post('/users', (req, res) => {
 
     // push this to the database
     user.save().then( () => {
-
+        res.status(201).send(req.body);
     }).catch( (e) => {
+        res.status(400).send(e);
         console.log("ERROR:", e);
     });
-
-    res.send(req.body);
-
 })
 
 
