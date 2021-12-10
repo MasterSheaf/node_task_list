@@ -20,31 +20,103 @@ const port = process.env.PORT || 3000;
 // we are going to cofigure express to parse the json for us
 app.use(express.json());
   
+app.get('/users', async (req, res) => {
+    console.log("GET:  users");
+    try {
+        const docs = await User.find({});
+        console.log("ok");
+        res.status(201).send(docs);
+    } catch (e) {
+        res.status(500).send(e);
+        console.log("ERROR:", e);
+    }
+})
+
+app.get('/users/:id', async (req,res) => {
+
+    const _id = req.params.id;
+    console.log("Seeking User ID:", _id);
+
+    try {
+
+        const result = await User.findById(_id);
+
+        if (result) {
+            console.log("ok");
+            res.status(201).send(result);
+        } else {
+            console.log("Not found");
+            res.status(404).send("Not Found");
+        }
+
+    } catch (e) {
+        res.status(500).send(e);
+        console.log("ERROR:", e);
+    }
+});
+
+app.get('/tasks', async (req, res) => {
+
+    console.log("GET:  tasks");
+
+    try {
+        const docs = await Task.find({});
+        console.log("ok");
+        res.status(201).send(docs);
+    } catch (e) {
+        res.status(500).send(e);
+        console.log("ERROR:", e);
+    }
+})
+
+app.get('/tasks/:id', async (req,res) => {
+
+    const _id = req.params.id;
+    console.log("Seeking Task ID:", _id);
+
+    try {
+
+        const result = await Task.findById(_id);
+
+        if (result) {
+            console.log("ok");
+            res.status(201).send(result);
+        } else {
+            console.log("Not found");
+            res.status(404).send("Not Found");
+        }
+
+    } catch (e) {
+        res.status(500).send(e);
+        console.log("ERROR:", e);
+    }
+});
+
 app.get('*', (req, res) => {
     res.send('Page not found!');
 });
 
 // we are going to use POST to create a new note
-app.post('/tasks', (req, res) => {
+app.post('/tasks', async (req, res) => {
 
-    console.log("POST: Task", req.body);
+    console.log("POST: task", req.body);
     
     // we are already getting the right format of object
     // from the post request so we can just feed into the
     // the model factory to get a new user
-    const user = new Task(req.body);
+    const task = new Task(req.body);
 
-    // push this to the database
-    user.save().then( () => {
-        res.status(201).send(req.body);
-    }).catch( (e) => {
+    try {
+        await task.save();
+        res.status(201).send(task);
+    }catch (e) {
         res.status(400).send(e);
         console.log("ERROR:", e);
-    });
+    }
 })
 
 // we are going to use POST to create a new note
-app.post('/users', (req, res) => {
+app.post('/users', async (req, res) => {
 
     console.log("POST: User", req.body);
     
@@ -53,13 +125,13 @@ app.post('/users', (req, res) => {
     // the model factory to get a new user
     const user = new User(req.body);
 
-    // push this to the database
-    user.save().then( () => {
-        res.status(201).send(req.body);
-    }).catch( (e) => {
+    try {
+        await user.save();
+        res.status(201).send(user);
+    }catch (e) {
         res.status(400).send(e);
         console.log("ERROR:", e);
-    });
+    }
 })
 
 
