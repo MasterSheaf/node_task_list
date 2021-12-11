@@ -40,7 +40,15 @@ const userSchema = new mongoose.Schema({
                 throw new Error('Age must be a postive number')
             }
         }
-    }
+    },
+    tokens: // token list is always part of a user, it's an array of objects
+    [{
+        token: // token object contains a string and it's required to be there
+        {
+            type: String,
+            required: true
+        }
+    }]
 });
 
 // set up the middleware to run just before the user.save() function is called
