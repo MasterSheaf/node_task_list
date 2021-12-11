@@ -18,9 +18,6 @@ app.use(taskRouter);
 // to Heroku we'll have that environment variable there so we are ready
 const port = process.env.PORT || 3000;
 
-// we are going to cofigure express to parse the json for us
-app.use(express.json());
-
 app.get('*', (req, res) => {
     res.send('Page not found!');
 });

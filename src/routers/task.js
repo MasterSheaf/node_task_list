@@ -3,6 +3,9 @@ const Task = require('../models/task')
 
 const router = new express.Router();
 
+// we are going to cofigure express to parse the json for us
+router.use(express.json());
+
 router.get('/tasks', async (req, res) => {
 
     console.log("GET:  tasks");
