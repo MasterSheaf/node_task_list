@@ -87,6 +87,14 @@ userSchema.methods.generateAuthToken = async function () {
         { _id: user._id.toString() }, // payload, can be anything but good to pick a unique value so we use the user _id
         'secretstringgoeshere'); // private key
     
+    // now that we have a token, we need to add it onto the tokens array
+    // I'm not sure why we are doing this yet but I think this helps allow
+    // users to login on different devices and have multiple active tokens
+    // at the same time
+    user.tokens = user.tokens.concat({token});
+
+    await user.save();
+
     return token;
 }
 

@@ -133,6 +133,7 @@ router.post('/users/login', async (req, res) => {
     }
 })
 
+// CREATE: A New User
 router.post('/users', async (req, res) => {
 
     console.log("POST: User", req.body);
@@ -143,8 +144,16 @@ router.post('/users', async (req, res) => {
     const user = new User(req.body);
 
     try {
-        await user.save();
-        res.status(201).send(user);
+
+        const token = await user.generateAuthToken();
+
+        // this feels bad, but since user.generateAuthToken() calls save
+        // already we don't need to do this again here.  probably a way
+        // to make this cleaner
+        //await user.save();
+
+        res.status(201).send( {user, token} );
+
     }catch (e) {
         res.status(400).send(e);
         console.log("ERROR:", e);
