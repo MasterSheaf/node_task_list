@@ -46,7 +46,7 @@ router.patch('/users/:id', async (req, res) => {
     const _id = req.params.id;
     console.log("Patching User ID:", _id);
 
-    // we want to make sure that they send in all the elements we expect
+    // we want to make sure that they send in only the elements we expect
 
     // method returns an array of a given object's own enumerable property names
     // we are going to make sure the properties are there that we expect

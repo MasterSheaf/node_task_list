@@ -48,16 +48,40 @@ router.patch('/tasks/:id', async (req, res) => {
     const _id = req.params.id;
     console.log("Patching Task ID:", _id);
 
+    // we want to make sure that they send in only the elements we expect
+
+    // method returns an array of a given object's own enumerable property names
+    // we are going to make sure the properties are there that we expect
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['completed','description'];
+
+    // tests whether all elements in the array pass the test implemented by the provided function
+    const isValidOperation = updates.every( (update) => {
+        console.log("Checking for", update);
+        // determines whether our array includes the value among its entries
+        return allowedUpdates.includes(update);
+    });
+
+    if (!isValidOperation) {
+        return res.status(400).send({error: 'Invalid updates'});
+    }
+
     try {
 
-        const user = await Task.findByIdAndUpdate(_id, req.body, {new: true, runValidators: true});
+        const task = await Task.findById(req.params.id);
 
-        if (!user) {
+        if (!task) {
             console.log("Error: didn't find task", _id);
             return res.status(404).send(e); 
         }
 
-        res.send(user);
+        updates.forEach((update) => {
+            task[update] = req.body[update];
+        });
+
+        await task.save();
+
+        res.send(task);
 
     } catch (e) {
 
@@ -73,7 +97,7 @@ router.post('/tasks', async (req, res) => {
     
     // we are already getting the right format of object
     // from the post request so we can just feed into the
-    // the model factory to get a new user
+    // the model factory to get a new task
     const task = new Task(req.body);
 
     try {
