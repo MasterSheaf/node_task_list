@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/MasterSheaf/node_task_list#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
     "mongodb": "^4.2.1",
     "mongoose": "^6.1.0",

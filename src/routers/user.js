@@ -46,6 +46,24 @@ router.patch('/users/:id', async (req, res) => {
     const _id = req.params.id;
     console.log("Patching User ID:", _id);
 
+    // we want to make sure that they send in all the elements we expect
+
+    // method returns an array of a given object's own enumerable property names
+    // we are going to make sure the properties are there that we expect
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['name','email','password'];
+
+    // tests whether all elements in the array pass the test implemented by the provided function
+    const isValidOperation = updates.every( (update) => {
+        console.log("Checking for", update);
+        // determines whether our array includes the value among its entries
+        return allowedUpdates.includes(update);
+    });
+
+    if (!isValidOperation) {
+        return res.status(400).send({error: 'Invalid updates'});
+    }
+
     try {
 
         const user = await User.findByIdAndUpdate(_id, req.body, {new: true, runValidators: true});
