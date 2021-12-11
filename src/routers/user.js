@@ -66,12 +66,31 @@ router.patch('/users/:id', async (req, res) => {
 
     try {
 
-        const user = await User.findByIdAndUpdate(_id, req.body, {new: true, runValidators: true});
+        // we need to change the update process because the findByIdAndUpdate bypasses
+        // the mongoose stuff, we need to do this with the traditional mongoose code so
+        // we can layer in some middleware
+        //const user = await User.findByIdAndUpdate(_id, req.body, {new: true, runValidators: true});
+
+        // get the object from the database by id
+        const user = await User.findById(req.params.id);
 
         if (!user) {
             console.log("Error: didn't find user", _id);
             return res.status(404).send(e); 
         }
+
+        // updates array contains the object field names that
+        // are being passed in, these are the ones they want to update
+        // so for each of these, we'll update the user object by copying
+        // over the object fields that they gave us to the user we just
+        // got back from the database
+        updates.forEach((update) => {
+            user[update] = req.body[update];
+        });
+
+        // this is where the middleware will run to 
+        // hash the password if needed
+        await user.save();
 
         res.send(user);
 
