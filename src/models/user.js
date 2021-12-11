@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -63,6 +64,23 @@ userSchema.pre( 'save', // the name of the event we want to run something ahead 
                     next();
                 }
 )
+
+// we are adding another function here but this one, as opposed to the statics
+// collection below, is an instance method and will only be called 
+// once we have a users object created, since this authentication is 
+// based on a particular user, this is a regular asynch function (not arrow)
+// because we need access to the "this" inside
+userSchema.methods.generateAuthToken = async function () {
+
+    const user = this; // just to make this clear
+
+    // create a token
+    const token = jwt.sign(
+        { _id: user._id.toString() }, // payload, can be anything but good to pick a unique value so we use the user _id
+        'secretstringgoeshere'); // private key
+    
+    return token;
+}
 
 // we are adding a function onto the userSchema model object that we can call
 // usage:  

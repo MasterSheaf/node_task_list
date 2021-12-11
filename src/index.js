@@ -25,3 +25,28 @@ app.get('*', (req, res) => {
 app.listen(port, () => {
     console.log("Server Running on Port 3000");
 });
+
+
+
+// // Goofing around with json web tokens
+// const jwt = require('jsonwebtoken');
+
+// const myfunc = async () => {
+//     const secret = 'thisismyrandomseriesofcharaters';
+
+//     const token = jwt.sign({ _id:'abc123' }, secret, {expiresIn: '5 seconds'});
+//     console.log(token);
+
+//     setTimeout(()=>{
+
+//         try {
+//             const data = jwt.verify(token, secret);
+//             console.log(data);
+//         }catch (e) {
+//             console.log(e);
+//         }
+//     },300);
+
+// }
+
+// myfunc();

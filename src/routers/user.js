@@ -117,8 +117,14 @@ router.post('/users/login', async (req, res) => {
             res.send({'error':'unable to login'});
         }
 
+        const token = await user.generateAuthToken();
+
         console.log("login ok")
-        res.send(user); // send the user back to see what happens for now
+
+        res.send( {user, token}); // send the user and token back to see what happens for now
+        // note that in the above we are using the object shorthand notation
+        // I could have written this instead
+        // res.send( {user:user, token:token});
 
     }catch (e) {
 
