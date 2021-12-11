@@ -6,6 +6,8 @@ const router = new express.Router();
 // we are going to cofigure express to parse the json for us
 router.use(express.json());
 
+
+
 router.get('/users', async (req, res) => {
     console.log("GET:  users");
     try {
@@ -98,6 +100,30 @@ router.patch('/users/:id', async (req, res) => {
 
         console.log("Error: ", e)
         res.status(400).send(e);
+    }
+})
+
+// this is the route the user will use to login
+router.post('/users/login', async (req, res) => {
+
+    console.log("POST: User Login", req.body);
+
+    try {
+
+        const user = await User.findByCredentials(req.body.email, req.body.password);
+
+        if (!user) {
+            console.log("error matching user or password")
+            res.send({'error':'unable to login'});
+        }
+
+        console.log("login ok")
+        res.send(user); // send the user back to see what happens for now
+
+    }catch (e) {
+
+        res.status(400).send(e);
+        console.log("ERROR:", e);
     }
 })
 

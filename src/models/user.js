@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim: true,
         lowercase: true,
+        unique: true, // this needs to be set before the whole database gets setup or the index it needs won't be created
         validate(value) {
             if (!validator.isEmail(value)) {
                 throw new Error('Email is invalid')
@@ -62,6 +63,33 @@ userSchema.pre( 'save', // the name of the event we want to run something ahead 
                     next();
                 }
 )
+
+// we are adding a function onto the userSchema model object that we can call
+// usage:  
+//     const user = await User.findByCredentials(req.body.email, req.body.password);
+//
+// I'm not sure what the value is by putting it on the model like this
+// it could have been a stand alone function over in the routes
+userSchema.statics.findByCredentials = async (email, password) => {
+    
+    // find the user by the email address
+    const user = await User.findOne( {email: email} );
+
+    if (!user) {
+        console.log("didn't find user in db");
+        return undefined;
+    }
+
+    // verify the password
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        console.log("passwords didn't match");
+        return undefined;
+    }
+
+    return user;
+}
 
 const User = mongoose.model('User', userSchema);
 
