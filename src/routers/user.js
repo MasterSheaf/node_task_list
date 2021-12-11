@@ -143,6 +143,8 @@ router.post('/users', async (req, res) => {
     // the model factory to get a new user
     const user = new User(req.body);
 
+    // this is a dummy comment to play with one line git add and commits
+
     try {
 
         const token = await user.generateAuthToken();
