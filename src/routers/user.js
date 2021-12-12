@@ -1,14 +1,13 @@
 const express = require('express');
 const User = require('../models/user');
+const auth = require('../middleware/auth');
 
 const router = new express.Router();
 
 // we are going to cofigure express to parse the json for us
 router.use(express.json());
 
-
-
-router.get('/users', async (req, res) => {
+router.get('/users', auth, async (req, res) => {
     console.log("GET:  users");
     try {
         const docs = await User.find({});
