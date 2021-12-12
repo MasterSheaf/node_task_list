@@ -6,6 +6,7 @@ const router = new express.Router();
 
 // we are going to cofigure express to parse the json for us
 router.use(express.json());
+router.use(auth);
 
 router.get('/users', auth, async (req, res) => {
     console.log("GET:  users");
@@ -142,13 +143,18 @@ router.post('/users', async (req, res) => {
     // the model factory to get a new user
     const user = new User(req.body);
 
-    // this is a dummy comment to play with one line git add and commits
-
     try {
+
+        // TODO: If the user's email address already exists
+        // then user.generateAuthToken() will generate an 
+        // exception.  This is ok, but the exception that gets
+        // caught here and sent to the caller isn't clear
+        // I think this and the next comment down are signals we 
+        // should clean this mechanism up a bit
 
         const token = await user.generateAuthToken();
 
-        // this feels bad, but since user.generateAuthToken() calls save
+        // TODO: this feels bad, but since user.generateAuthToken() calls save
         // already we don't need to do this again here.  probably a way
         // to make this cleaner
         //await user.save();

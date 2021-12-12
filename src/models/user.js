@@ -83,6 +83,15 @@ userSchema.methods.generateAuthToken = async function () {
     const user = this; // just to make this clear
 
     // create a token
+    // this is seralizing the object "payload" into the token
+    // using the key - it'll generate a base64 payload that 
+    // we can later decide into the same object
+    // so that payload is an object with one key named _id
+    // the value is a string representation of the user's id
+    // converted into a string
+    // the flip side of this is over in auth.js where we get the
+    // token, decode the base64 into a string and then into an 
+    // object from which we can check the id
     const token = jwt.sign(
         { _id: user._id.toString() }, // payload, can be anything but good to pick a unique value so we use the user _id
         'secretstringgoeshere'); // private key
