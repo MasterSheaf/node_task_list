@@ -6,18 +6,31 @@ const router = new express.Router();
 
 // we are going to cofigure express to parse the json for us
 router.use(express.json());
-router.use(auth);
 
-router.get('/users', auth, async (req, res) => {
-    console.log("GET:  users");
+router.get('/users/me', auth, async (req, res) => {
+    
+    console.log("GET:  logged in users profile");
+
     try {
-        const docs = await User.find({});
-        console.log("ok");
-        res.status(201).send(docs);
+        // we are already logged in if we get this far
+        // and the auth middleware has given us the user
+        // object in the req.user field because we added
+        // it once we were logged in, so we can just send it 
+        // along
+        if (!req.user) {
+            // this should never happen once I get the code finished
+            throw new Error("Logic error in /users/me - req or req.user undefined")
+        }
+            
+        res.send(req.user);
+
     } catch (e) {
-        res.status(500).send(e);
-        console.log("ERROR:", e);
+        if (e instanceof Error)
+            res.status(500).send({error: e.message});
+        else 
+            res.status(500).send(e);
     }
+
 })
 
 router.get('/users/:id', async (req,res) => {
