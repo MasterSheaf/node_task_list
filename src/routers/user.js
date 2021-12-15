@@ -7,6 +7,7 @@ const router = new express.Router();
 // we are going to cofigure express to parse the json for us
 router.use(express.json());
 
+// GET User Profile
 router.get('/users/me', auth, async (req, res) => {
 
     console.log("GET:  logged in users profile");
@@ -19,14 +20,14 @@ router.get('/users/me', auth, async (req, res) => {
 
 })
 
-router.get('/users/:id', async (req,res) => {
+// DELETE - delete a user by id
+router.delete('/users', auth, async (req,res) => {
 
-    const _id = req.params.id;
-    console.log("Seeking User ID:", _id);
+    console.log("Delete user", req._id);
 
     try {
 
-        const result = await User.findById(_id);
+        const result = await User.findByIdAndDelete(req._id);
 
         if (result) {
             console.log("ok");
@@ -42,6 +43,7 @@ router.get('/users/:id', async (req,res) => {
     }
 });
 
+// PATCH User Info
 router.patch('/users/:id', auth, async (req, res) => {
 
     console.log("Patching User ID:", req._id);
@@ -104,7 +106,7 @@ router.patch('/users/:id', auth, async (req, res) => {
     }
 })
 
-// this is the route the user will use to login
+// POST Login - this is the route the user will use to login
 router.post('/users/login', async (req, res) => {
 
     console.log("POST: User Login", req.body);
@@ -134,6 +136,7 @@ router.post('/users/login', async (req, res) => {
     }
 })
 
+// POST Log Out
 router.post('/users/logout', auth, async (req, res) => {
     
     console.log("POST: Logout", req.body);
@@ -161,6 +164,7 @@ router.post('/users/logout', auth, async (req, res) => {
     }
 })
 
+// POST Log out of everywhere at once
 router.post('/users/logoutall', auth, async (req, res) => {
     
     console.log("POST: Logout All", req.body);
