@@ -8,31 +8,13 @@ const router = new express.Router();
 router.use(express.json());
 
 router.get('/users/me', auth, async (req, res) => {
-    
-    // Note: the auth middleware function will add a user and _id
-    // property to the req param before it gets passed to us
-    // assuming the user has authenticated
 
     console.log("GET:  logged in users profile");
 
-    try {
-        // we are already logged in if we get this far
-        // and the auth middleware has given us the user
-        // object in the req.user field because we added
-        // it once we were logged in, so we can just send it 
-        // along
-        if (!req.user) {
-            // this should never happen once I get the code finished
-            throw new Error("Logic error in /users/me - req or req.user undefined")
-        }
-            
+    try {           
         res.send(req.user);
-
     } catch (e) {
-        if (e instanceof Error)
-            res.status(500).send({error: e.message});
-        else 
-            res.status(500).send(e);
+        res.status(500).send(e);
     }
 
 })
@@ -62,9 +44,6 @@ router.get('/users/:id', async (req,res) => {
 
 router.patch('/users/:id', auth, async (req, res) => {
 
-    //const _id = req.params.id;
-    // we can now get this from the user post authentication
-    //const _id = auth._id;
     console.log("Patching User ID:", req._id);
 
     // we want to make sure that they send in only the elements we expect
@@ -143,7 +122,7 @@ router.post('/users/login', async (req, res) => {
 
             console.log("login ok")
     
-            res.send( {user, token}); // send the user and token back to see what happens for now
+            res.send( {user, token} ); // send the user and token back to see what happens for now
             // note that in the above we are using the object shorthand notation
             // I could have written this instead
             // res.send( {user:user, token:token});
@@ -156,8 +135,52 @@ router.post('/users/login', async (req, res) => {
 })
 
 router.post('/users/logout', auth, async (req, res) => {
+    
     console.log("POST: Logout", req.body);
-    res.status(200).send({'status':'excellent'});
+
+    // we have this stuff from the authentication middleware
+    const tokenToRemove = req.token;
+
+    try {
+
+        // we need to remove the token from the array of tokens on user 
+        // and then update the user in the database
+        req.user.tokens = req.user.tokens.filter( (token) => {
+            return token.token !== tokenToRemove;
+        })
+
+        // update the database
+        await req.user.save();
+
+        res.status(200).send({'logout':'ok'});
+
+    } catch (e) {
+
+        res.status(500).send({'status':'Error logging out'});
+        console.log(e);
+    }
+})
+
+router.post('/users/logoutall', auth, async (req, res) => {
+    
+    console.log("POST: Logout All", req.body);
+
+    try {
+
+        // we need to remove the token from the array of tokens on user 
+        // and then update the user in the database
+        req.user.tokens = [];
+
+        // update the database
+        await req.user.save();
+
+        res.status(200).send({'logout all':'ok'});
+
+    } catch (e) {
+
+        res.status(500).send({'status':'Error logging out'});
+        console.log(e);
+    }
 })
 
 // CREATE: A New User
