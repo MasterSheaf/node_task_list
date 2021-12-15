@@ -21,7 +21,7 @@ router.get('/users/me', auth, async (req, res) => {
         // object in the req.user field because we added
         // it once we were logged in, so we can just send it 
         // along
-        if (!auth.user) {
+        if (!req.user) {
             // this should never happen once I get the code finished
             throw new Error("Logic error in /users/me - req or req.user undefined")
         }
@@ -153,6 +153,11 @@ router.post('/users/login', async (req, res) => {
         res.status(400).send(e);
         console.log("ERROR:", e);
     }
+})
+
+router.post('/users/logout', auth, async (req, res) => {
+    console.log("POST: Logout", req.body);
+    res.status(200).send({'status':'excellent'});
 })
 
 // CREATE: A New User
