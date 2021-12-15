@@ -9,6 +9,10 @@ router.use(express.json());
 
 router.get('/users/me', auth, async (req, res) => {
     
+    // Note: the auth middleware function will add a user and _id
+    // property to the req param before it gets passed to us
+    // assuming the user has authenticated
+
     console.log("GET:  logged in users profile");
 
     try {
@@ -17,7 +21,7 @@ router.get('/users/me', auth, async (req, res) => {
         // object in the req.user field because we added
         // it once we were logged in, so we can just send it 
         // along
-        if (!req.user) {
+        if (!auth.user) {
             // this should never happen once I get the code finished
             throw new Error("Logic error in /users/me - req or req.user undefined")
         }
@@ -56,17 +60,19 @@ router.get('/users/:id', async (req,res) => {
     }
 });
 
-router.patch('/users/:id', async (req, res) => {
+router.patch('/users/:id', auth, async (req, res) => {
 
-    const _id = req.params.id;
-    console.log("Patching User ID:", _id);
+    //const _id = req.params.id;
+    // we can now get this from the user post authentication
+    //const _id = auth._id;
+    console.log("Patching User ID:", req._id);
 
     // we want to make sure that they send in only the elements we expect
 
     // method returns an array of a given object's own enumerable property names
     // we are going to make sure the properties are there that we expect
     const updates = Object.keys(req.body);
-    const allowedUpdates = ['name','email','password'];
+    const allowedUpdates = ['name','email','password','age'];
 
     // tests whether all elements in the array pass the test implemented by the provided function
     const isValidOperation = updates.every( (update) => {
@@ -87,9 +93,12 @@ router.patch('/users/:id', async (req, res) => {
         //const user = await User.findByIdAndUpdate(_id, req.body, {new: true, runValidators: true});
 
         // get the object from the database by id
-        const user = await User.findById(req.params.id);
 
-        if (!user) {
+        // we already have the user from the authentication
+        // const user = await User.findById(req.params.id);
+
+        // this should never happen now
+        if (!req.user) {
             console.log("Error: didn't find user", _id);
             return res.status(404).send(e); 
         }
@@ -100,14 +109,14 @@ router.patch('/users/:id', async (req, res) => {
         // over the object fields that they gave us to the user we just
         // got back from the database
         updates.forEach((update) => {
-            user[update] = req.body[update];
+            req.user[update] = req.body[update];
         });
 
         // this is where the middleware will run to 
         // hash the password if needed
-        await user.save();
+        await req.user.save();
 
-        res.send(user);
+        res.send(req.user);
 
     } catch (e) {
 
@@ -128,17 +137,17 @@ router.post('/users/login', async (req, res) => {
         if (!user) {
             console.log("error matching user or password")
             res.send({'error':'unable to login'});
+        } else {
+
+            const token = await user.generateAuthToken();
+
+            console.log("login ok")
+    
+            res.send( {user, token}); // send the user and token back to see what happens for now
+            // note that in the above we are using the object shorthand notation
+            // I could have written this instead
+            // res.send( {user:user, token:token});
         }
-
-        const token = await user.generateAuthToken();
-
-        console.log("login ok")
-
-        res.send( {user, token}); // send the user and token back to see what happens for now
-        // note that in the above we are using the object shorthand notation
-        // I could have written this instead
-        // res.send( {user:user, token:token});
-
     }catch (e) {
 
         res.status(400).send(e);

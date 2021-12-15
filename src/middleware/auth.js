@@ -65,6 +65,7 @@ const auth = async (req, res, next) => {
 
         // we'll add a property onto the req object using magic javascript
         req.user = user;
+        req._id = decodedToken._id; // save off the _id of the user in the database
 
         next();
 
