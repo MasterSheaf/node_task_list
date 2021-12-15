@@ -73,6 +73,22 @@ userSchema.pre( 'save', // the name of the event we want to run something ahead 
                 }
 )
 
+// express automatically calls the toJSON method on an object
+// that is passed into the send methods.  we'll take advantage of this
+// to strip off the sensative information
+userSchema.methods.toJSON = function () {
+    const user = this; // for readability
+
+    // Documents have a toObject method which converts the 
+    // mongoose document into a plain JavaScript object
+    const userObject = user.toObject();
+
+    delete userObject.password;
+    delete userObject.tokens;
+
+    return userObject;
+}
+
 // we are adding another function here but this one, as opposed to the statics
 // collection below, is an instance method and will only be called 
 // once we have a users object created, since this authentication is 
