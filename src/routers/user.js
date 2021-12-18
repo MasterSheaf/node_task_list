@@ -27,15 +27,7 @@ router.delete('/users/me', auth, async (req,res) => {
 
     try {
 
-        console.log("before remove");
-
         const result = await req.user.remove(req._id);
-
-        console.log("after remove");
-
-        // the following works the same as before but is simpler
-
-        //await req.user.remove()
 
         if (result) {
             console.log("ok");

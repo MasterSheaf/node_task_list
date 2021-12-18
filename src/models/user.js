@@ -107,12 +107,8 @@ userSchema.pre( 'remove', // the name of the event we want to run something ahea
                 async function (next) {
 
                     const user = this; // shortcut because this is pointing to a user model
-                    
-                    console.log("just before removing: ", user.name, user._id);
 
                     results = await Task.deleteMany({owner: user._id});
-
-                    console.log(results);
 
                     next();
                 }
