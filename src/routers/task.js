@@ -1,12 +1,12 @@
 const express = require('express');
 const Task = require('../models/task')
-
+const auth = require('../middleware/auth')
 const router = new express.Router();
 
 // we are going to cofigure express to parse the json for us
 router.use(express.json());
 
-router.get('/tasks', async (req, res) => {
+router.get('/tasks', auth, async (req, res) => {
 
     console.log("GET:  tasks");
 
@@ -90,15 +90,23 @@ router.patch('/tasks/:id', async (req, res) => {
     }
 })
 
-// we are going to use POST to create a new note
-router.post('/tasks', async (req, res) => {
+// we are going to use POST to create a new task
+// since we are authenticated if we get this far
+// we can make sure we set this task to be associated with
+// the currenyly logged in user
+router.post('/tasks', auth, async (req, res) => {
 
     console.log("POST: task", req.body);
     
     // we are already getting the right format of object
     // from the post request so we can just feed into the
     // the model factory to get a new task
-    const task = new Task(req.body);
+    //const task = new Task(req.body);
+
+    const task = new Task({
+        ...req.body, // spread the whole body object here - fancy copy
+        owner: req.user._id // object
+    });
 
     try {
         await task.save();

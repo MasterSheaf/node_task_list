@@ -28,7 +28,31 @@ app.listen(port, () => {
     console.log("Server Running on Port 3000");
 });
 
+const Task = require('./models/task')
+const User = require('./models/user')
 
+// // make an async function so we can use await inside
+// const main = async () => {
+//     // const task = await Task.findById('61ba986fe05e33f24ac1b1a2')
+//     // task.populate('owner')
+//     // .then( (task) => {
+//     //     console.log( JSON.stringify(task.owner) )
+//     //     console.log( task.owner.id )
+//     //     console.log( task.owner.name )
+//     // })
+//     // .catch( (e) => {
+//     //     console.log('Exception', e)
+//     // })
+//     const user = await User.findById('61ba8468f0149d17aa369ac1')
+//     await user.populate('tasks') // populate that virtual field we created on user
+    
+//     user.tasks.forEach( (task) => {
+//         console.log("Task\n", task.id, task.description, task.completed);
+//     })
+    
+// }
+
+// main()
 
 // // Goofing around with json web tokens
 // const jwt = require('jsonwebtoken');

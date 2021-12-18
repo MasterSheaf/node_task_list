@@ -3,6 +3,18 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+
+// A Mongoose model is a wrapper on the Mongoose schema. A Mongoose schema defines the structure of 
+// the document, default values, validators, etc., whereas a Mongoose model provides an interface 
+// to the database for creating, querying, updating, deleting records, etc.
+//
+// ‘Models’ are higher-order constructors that take a schema and create an instance of a document 
+// equivalent to records in a relational database.
+//
+// we create a schema here, instead of a model, because we are going to add some stuff to the 
+// schema like the methods down below.  then we'll pass the schema to the constructor
+// const User = mongoose.model('User', userSchema); down below to actually get the model to
+// export
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -50,6 +62,18 @@ const userSchema = new mongoose.Schema({
         }
     }]
 });
+
+// we need to setup a virtual field on the user schema to tell mongoose
+// In Mongoose, a virtual is a property that is not stored in MongoDB. 
+// Virtuals are typically used for computed properties on documents.
+userSchema.virtual('tasks', {
+    ref: 'Task', // The ref option, which tells Mongoose which model to populate documents from.
+    // The localField and foreignField options. Mongoose will populate documents from the model 
+    // in ref whose foreignField matches this document's localField
+    localField: '_id', // this says match to our id
+    foreignField: 'owner', // this field over in Task gets populated by id's
+});
+
 
 // set up the middleware to run just before the user.save() function is called
 // this will give us a chance to modify the data ahead of saving
