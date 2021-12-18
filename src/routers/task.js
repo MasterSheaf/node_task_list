@@ -20,14 +20,22 @@ router.get('/tasks', auth, async (req, res) => {
     }
 })
 
-router.get('/tasks/:id', async (req,res) => {
+router.get('/tasks/:id', auth, async (req,res) => {
 
-    const _id = req.params.id;
-    console.log("Seeking Task ID:", _id);
+    const taskID = req.params.id;
+    const ownerID = req._id;
+
+    console.log("Seeking Task ID:", taskID, "Owned by:", ownerID);
 
     try {
 
-        const result = await Task.findById(_id);
+        //const result = await Task.findById(_id);
+
+        // findOne finds the first element that matches the query
+        // we are looking for the first task that is owned by ownerID
+        // taskID is provided by the caller
+        // ownerID is provided by the auth layer
+        const result = await Task.findOne({_id:taskID, owner: ownerID});
 
         if (result) {
             console.log("ok");
