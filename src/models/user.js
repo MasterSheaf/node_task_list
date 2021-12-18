@@ -198,6 +198,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
     return user;
 }
 
+// create a user model from the schema and export that
 const User = mongoose.model('User', userSchema);
 
 module.exports = User

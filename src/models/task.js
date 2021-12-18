@@ -13,7 +13,7 @@ const validator = require('validator')
 // pass that Schema into a constructor later on to get the
 // actual model
 
-const Task = mongoose.model('Task', {
+const taskSchema = mongoose.Schema( {
     description: {
         type: String,
         required: true,
@@ -44,7 +44,9 @@ const Task = mongoose.model('Task', {
         // but this time the owner will be swapped out for the actual owner
         // object from the other collection
     }
-})
+},
+    { timestamps: true } // see the user model for some notes
+)
 
 // The properties that we want to use .populate() on are properties that have a type 
 // of mongoose.Schema.Types.ObjectId. This tells Mongoose “Hey, I’m gonna be referencing 
@@ -53,4 +55,8 @@ const Task = mongoose.model('Task', {
 
 // references:  https://medium.com/@nicknauert/mongooses-model-populate-b844ae6d1ee7
 // https://www.geeksforgeeks.org/mongoose-populate-method/
+
+// create a user model from the schema and export that
+const Task = mongoose.model('Task', taskSchema);
+
 module.exports = Task
