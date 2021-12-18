@@ -10,8 +10,10 @@ router.get('/tasks', auth, async (req, res) => {
 
     console.log("GET:  tasks");
 
+    const ownerID = req._id;
+
     try {
-        const docs = await Task.find({});
+        const docs = await Task.find({owner: ownerID});
         console.log("ok");
         res.status(201).send(docs);
     } catch (e) {
@@ -51,10 +53,12 @@ router.get('/tasks/:id', auth, async (req,res) => {
     }
 });
 
-router.patch('/tasks/:id', async (req, res) => {
+router.patch('/tasks/:id', auth, async (req, res) => {
 
-    const _id = req.params.id;
-    console.log("Patching Task ID:", _id);
+    const taskID = req.params.id;
+    const ownerID = req._id;
+
+    console.log("Patching Task ID:", taskID, "Owned by:", ownerID);
 
     // we want to make sure that they send in only the elements we expect
 
@@ -76,7 +80,7 @@ router.patch('/tasks/:id', async (req, res) => {
 
     try {
 
-        const task = await Task.findById(req.params.id);
+        const task = await Task.findOne({_id: taskID, owner: ownerID});
 
         if (!task) {
             console.log("Error: didn't find task", _id);
