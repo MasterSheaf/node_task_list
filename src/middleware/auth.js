@@ -1,6 +1,10 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
+// TODO:  When the user tries to do something and is not logged
+// in we are sending back an error that says jet malformed - add
+// a better response to let them know to login 
+
 // Our Authentication Middlware Handler
 const auth = async (req, res, next) => {
 

@@ -23,12 +23,12 @@ router.get('/tasks', auth, async (req, res) => {
         })
 
         // option 2:  use the populate method 
-        const user = await User.findById(ownerID)
-        await user.populate('tasks') // populate that virtual field we created on user
+        // const user = await User.findById(ownerID)
+        // await user.populate('tasks') // populate that virtual field we created on user
 
-        user.tasks.forEach( (task) => {
-            console.log("Task: ", task.id, task.description, task.completed);
-        })
+        // user.tasks.forEach( (task) => {
+        //     console.log("Task: ", task.id, task.description, task.completed);
+        // })
 
         console.log("ok");
         res.status(201).send(docs);
@@ -138,6 +138,62 @@ router.post('/tasks', auth, async (req, res) => {
         res.status(201).send(task);
     }catch (e) {
         res.status(400).send(e);
+        console.log("ERROR:", e);
+    }
+})
+
+
+router.get('/tasks/:id', auth, async (req,res) => {
+
+    const taskID = req.params.id;
+    const ownerID = req._id;
+
+    console.log("Seeking Task ID:", taskID, "Owned by:", ownerID);
+
+    try {
+        // findOne finds the first element that matches the query
+        // we are looking for the first task that is owned by ownerID
+        // taskID is provided by the caller
+        // ownerID is provided by the auth layer
+        const result = await Task.findOne({_id:taskID, owner: ownerID});
+
+        if (result) {
+            console.log("ok");
+            res.status(201).send(result);
+        } else {
+            console.log("Not found");
+            res.status(404).send("Not Found");
+        }
+
+    } catch (e) {
+        res.status(500).send(e);
+        console.log("ERROR:", e);
+    }
+});
+
+router.delete('/tasks/:id', auth, async (req, res) => {
+
+    // TODO:  When a task id is bad we are sending back 
+    // a big complex error object - simplify that and only send
+    // back minimal info
+    
+    const taskID = req.params.id;
+    console.log("Delete task", taskID);
+
+    try {
+
+        const result = await Task.findByIdAndDelete(taskID);
+
+        if (result) {
+            console.log("ok");
+            res.status(201).send(result);
+        } else {
+            console.log("Not found");
+            res.status(404).send("Not Found");
+        }
+
+    } catch (e) {
+        res.status(500).send(e);
         console.log("ERROR:", e);
     }
 })
