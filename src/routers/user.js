@@ -27,7 +27,11 @@ router.delete('/users/me', auth, async (req,res) => {
 
     try {
 
-        const result = await User.findByIdAndDelete(req._id);
+        console.log("before remove");
+
+        const result = await req.user.remove(req._id);
+
+        console.log("after remove");
 
         // the following works the same as before but is simpler
 

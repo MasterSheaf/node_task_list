@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Task = require('./task')
 
 
 // A Mongoose model is a wrapper on the Mongoose schema. A Mongoose schema defines the structure of 
@@ -96,6 +97,27 @@ userSchema.pre( 'save', // the name of the event we want to run something ahead 
                     next();
                 }
 )
+
+// set up the middleware to run just before the user.remove() function is called
+// this will give us a chance to delete any tasks or other data associated withh the user
+userSchema.pre( 'remove', // the name of the event we want to run something ahead of
+                // we pass in a function here instead of an arrow function 
+                // because we are going to need access to 'this' which arrow
+                // functions don't have, this points to the user object in this case
+                async function (next) {
+
+                    const user = this; // shortcut because this is pointing to a user model
+                    
+                    console.log("just before removing: ", user.name, user._id);
+
+                    results = await Task.deleteMany({owner: user._id});
+
+                    console.log(results);
+
+                    next();
+                }
+)
+
 
 // express automatically calls the toJSON method on an object
 // that is passed into the send methods.  we'll take advantage of this

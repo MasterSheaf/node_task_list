@@ -183,7 +183,7 @@ router.delete('/tasks/:id', auth, async (req, res) => {
 
     try {
 
-        const result = await Task.findByIdAndDelete( { _id:taskID, owner: ownerID });
+        const result = await Task.deleteOne( { _id:taskID, owner: ownerID });
 
         if (result) {
             console.log("ok");
