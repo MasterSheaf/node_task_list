@@ -8,9 +8,11 @@ const User = require('../models/user');
 // Our Authentication Middlware Handler
 const auth = async (req, res, next) => {
 
+    //console.log('In auth query=',req.query);
+
     try {
 
-        console.log("middlware:", req.method, req.path);
+        //console.log("middlware:", req.method, req.path);
 
         // this gets us the header field we want, called Authorization
         // from MDM: The HTTP Authorization request header can be used 
@@ -24,7 +26,7 @@ const auth = async (req, res, next) => {
         if (!fullToken)
             throw new Error("Autorization header field not found");
 
-        console.log("middlware: Authorization header found");
+        //console.log("middlware: Authorization header found");
 
         // get the JWT portion from the token
         // it should come in as "Bearer token..."
@@ -34,7 +36,7 @@ const auth = async (req, res, next) => {
         if (!token)
             throw new Error("Autorization header field not formatted correctly");
         
-        console.log("middlware: Token string extracted");
+        //console.log("middlware: Token string extracted");
 
         // verify the token
         // this will return the object we provided in the 
@@ -42,7 +44,7 @@ const auth = async (req, res, next) => {
         // it has one member which is the _id of the user
         const decodedToken = jwt.verify(token, 'secretstringgoeshere');
         
-        console.log("middlware: Token verified");
+        //console.log("middlware: Token verified");
 
         // query the database looking for one user who has the id
         // and the matching token in the tokens array which contains
@@ -58,7 +60,7 @@ const auth = async (req, res, next) => {
         if (!user)
             throw new Error(`Database lookup of user ${decodedToken._id} failed`);
 
-        console.log("middlware: User found in database");
+        //console.log("middlware: User found in database");
 
         // at this point the user has proven thay are authenticated
         // so we can let the route handlers rock and roll

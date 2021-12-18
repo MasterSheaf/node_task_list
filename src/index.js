@@ -31,6 +31,27 @@ app.listen(port, () => {
 const Task = require('./models/task')
 const User = require('./models/user')
 
+const queryParams = {
+    completedFilter: "false"
+}
+
+const query = {
+    owner: '61be5b7afabc13afb9fe17d9'
+    ,   ...( ('completedFilter' in queryParams) && {completed: queryParams.completedFilter})
+};
+
+const main = async () => {
+
+    const docs = await Task.find(query);
+
+    docs.forEach( (task) => {
+        console.log("Task: ", task.id, task.description, task.completed);
+    })
+
+}
+
+main()
+
 // // make an async function so we can use await inside
 // const main = async () => {
 //     // const task = await Task.findById('61ba986fe05e33f24ac1b1a2')
@@ -52,7 +73,7 @@ const User = require('./models/user')
     
 // }
 
-// main()
+
 
 // // Goofing around with json web tokens
 // const jwt = require('jsonwebtoken');

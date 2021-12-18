@@ -7,31 +7,57 @@ const router = new express.Router();
 // we are going to cofigure express to parse the json for us
 router.use(express.json());
 
+// /tasks   return all the tasks
+// /tasks?completed=true|false   return only completed and uncompleted tasks
 router.get('/tasks', auth, async (req, res) => {
 
     console.log("GET:  tasks");
+
+    console.log('In /tasks query=',req.query);
 
     const ownerID = req._id;
 
     try {
         // there are two ways to do this
         // Method 1:  return all the tasks with the userID we are looking for
-        const docs = await Task.find({owner: ownerID});
 
-        docs.forEach( (task) => {
-            console.log("Task: ", task.id, task.description, task.completed);
-        })
+        // const query = {
+        //     owner: ownerID,
+        //     // this funny stuff below is a conditional spread of an object
+        //     // that is conditionally created based on if "completed" is 
+        //     // a member of the params object, if not we leave the filter
+        //     // off completely and get all tasks, otherwise we get the 
+        //     // completed or not completed based on the param
+        //     ...( ("completed" in req.query) && {completed: req.query.completed})
+        // };
 
-        // option 2:  use the populate method 
-        // const user = await User.findById(ownerID)
-        // await user.populate('tasks') // populate that virtual field we created on user
+        // const docs = await Task.find(query);
 
-        // user.tasks.forEach( (task) => {
+        // docs.forEach( (task) => {
         //     console.log("Task: ", task.id, task.description, task.completed);
         // })
 
+        //res.status(201).send(docs);
+        
+        //option 2:  use the populate method 
+        
+        const match = {
+            ...( ("completed" in req.query) && {completed: req.query.completed})
+        };
+
+        await req.user.populate({
+            path: 'tasks',
+            match
+        }); // populate that virtual field we created on user
+
+        req.user.tasks.forEach( (task) => {
+            console.log("Task: ", task.id, task.description, task.completed);
+        })
+
+        res.status(201).send(req.user.tasks);
+
         console.log("ok");
-        res.status(201).send(docs);
+
     } catch (e) {
         res.status(500).send(e);
         console.log("ERROR:", e);
