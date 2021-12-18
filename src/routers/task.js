@@ -176,13 +176,14 @@ router.delete('/tasks/:id', auth, async (req, res) => {
     // TODO:  When a task id is bad we are sending back 
     // a big complex error object - simplify that and only send
     // back minimal info
-    
+
     const taskID = req.params.id;
+    const ownerID = req._id;
     console.log("Delete task", taskID);
 
     try {
 
-        const result = await Task.findByIdAndDelete(taskID);
+        const result = await Task.findByIdAndDelete( { _id:taskID, owner: ownerID });
 
         if (result) {
             console.log("ok");
