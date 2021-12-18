@@ -62,7 +62,13 @@ const userSchema = new mongoose.Schema({
             required: true
         }
     }]
-});
+},
+// Mongoose schemas have a timestamps option that tells Mongoose to automatically 
+// manage createdAt and updatedAt properties on your documents. 
+{ timestamps: true } // true to enable timestamps
+// with timestampts enabled, mongoose will add these two additional fields for us
+// and update them accordingly 
+);
 
 // we need to setup a virtual field on the user schema to tell mongoose
 // In Mongoose, a virtual is a property that is not stored in MongoDB. 
