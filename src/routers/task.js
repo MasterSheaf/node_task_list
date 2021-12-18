@@ -1,5 +1,6 @@
 const express = require('express');
 const Task = require('../models/task')
+const User = require('../models/user')
 const auth = require('../middleware/auth')
 const router = new express.Router();
 
@@ -13,7 +14,22 @@ router.get('/tasks', auth, async (req, res) => {
     const ownerID = req._id;
 
     try {
+        // there are two ways to do this
+        // Method 1:  return all the tasks with the userID we are looking for
         const docs = await Task.find({owner: ownerID});
+
+        docs.forEach( (task) => {
+            console.log("Task: ", task.id, task.description, task.completed);
+        })
+
+        // option 2:  use the populate method 
+        const user = await User.findById(ownerID)
+        await user.populate('tasks') // populate that virtual field we created on user
+
+        user.tasks.forEach( (task) => {
+            console.log("Task: ", task.id, task.description, task.completed);
+        })
+
         console.log("ok");
         res.status(201).send(docs);
     } catch (e) {
@@ -30,9 +46,6 @@ router.get('/tasks/:id', auth, async (req,res) => {
     console.log("Seeking Task ID:", taskID, "Owned by:", ownerID);
 
     try {
-
-        //const result = await Task.findById(_id);
-
         // findOne finds the first element that matches the query
         // we are looking for the first task that is owned by ownerID
         // taskID is provided by the caller
