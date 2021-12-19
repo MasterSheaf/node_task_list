@@ -10,7 +10,9 @@ router.use(express.json());
 // /tasks   return all the tasks
 // /tasks?completed=true|false   return only completed and uncompleted tasks
 // /tasks?limit=10&page=1   limit how many items get returned in this query 
-//                          page says how many to skip   page*limit
+//                          page says how many to skip
+// so if you wanted 10 items per page and you wanted to view the 5th page
+// you would set skip equal to 5*10=50
 router.get('/tasks', auth, async (req, res) => {
 
     console.log("GET:  tasks");
