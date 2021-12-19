@@ -9,6 +9,8 @@ router.use(express.json());
 
 // /tasks   return all the tasks
 // /tasks?completed=true|false   return only completed and uncompleted tasks
+// /tasks?limit=10&page=1   limit how many items get returned in this query 
+//                          page says how many to skip   page*limit
 router.get('/tasks', auth, async (req, res) => {
 
     console.log("GET:  tasks");
@@ -45,9 +47,14 @@ router.get('/tasks', auth, async (req, res) => {
             ...( ("completed" in req.query) && {completed: req.query.completed})
         };
 
+        const options = {
+            ...( ("limit" in req.query) && {limit: req.query.limit})
+        }
+
         await req.user.populate({
             path: 'tasks',
-            match
+            match: match,
+            options: options
         }); // populate that virtual field we created on user
 
         req.user.tasks.forEach( (task) => {
