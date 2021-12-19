@@ -13,6 +13,10 @@ router.use(express.json());
 //                          page says how many to skip
 // so if you wanted 10 items per page and you wanted to view the 5th page
 // you would set skip equal to 5*10=50
+//
+// NOTE:  I skipped the lesson on sorting.  I was really frustrated by the
+// mongoose documentation and I didn't to bother building and parsing the 
+// query parameters.
 router.get('/tasks', auth, async (req, res) => {
 
     console.log("GET:  tasks");
