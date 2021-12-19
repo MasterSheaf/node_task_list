@@ -44,11 +44,11 @@ router.get('/tasks', auth, async (req, res) => {
         //option 2:  use the populate method 
         
         const match = {
-            ...( ("completed" in req.query) && {completed: req.query.completed})
+            ...( ("completed" in req.query) && {completed: (req.query.completed === 'true')})
         };
 
         const options = {
-            ...( ("limit" in req.query) && {limit: req.query.limit})
+            ...( ("limit" in req.query) && {limit: parseInt(req.query.limit)})
         }
 
         await req.user.populate({
