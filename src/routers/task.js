@@ -48,7 +48,8 @@ router.get('/tasks', auth, async (req, res) => {
         };
 
         const options = {
-            ...( ("limit" in req.query) && {limit: parseInt(req.query.limit)})
+            ...( ("limit" in req.query) && {limit: parseInt(req.query.limit)}),
+            ...( ("skip" in req.query) && {skip: parseInt(req.query.skip)})
         }
 
         await req.user.populate({
